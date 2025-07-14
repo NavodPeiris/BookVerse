@@ -41,6 +41,7 @@ async def rate(request: RateRequest, user_id: int = Depends(get_current_user_id)
     if existing_rate:
         existing_rate.review = request.review
         existing_rate.rate = request.rate
+        await db.commit()
         return JSONResponse(content={"message": "review updated successfully"})
 
     # Add the like
@@ -74,7 +75,7 @@ async def recommend(user_id: int = Depends(get_current_user_id), db: AsyncSessio
     recommended_book_ids = result.scalars().all()
 
     result_docs = []
-
+    response = None
     for book_id in recommended_book_ids:
         bucket_name = "book-metadata"
         object_name = f"{book_id}.json"
@@ -96,9 +97,10 @@ async def recommend(user_id: int = Depends(get_current_user_id), db: AsyncSessio
 
         result_docs.append(formatted_doc)
 
-    # Close the stream
-    response.close()
-    response.release_conn()
+    if response != None:
+        # Close the stream
+        response.close()
+        response.release_conn()
 
     return JSONResponse(content=result_docs)
 

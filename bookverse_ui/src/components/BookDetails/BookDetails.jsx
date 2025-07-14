@@ -18,6 +18,7 @@ const BookDetails = () => {
 
   const [rate, setRate] = useState(0);
   const [review, setReview] = useState("");
+  const [showRatingModal, setShowRatingModal] = useState(false);
 
   const setBookDetails = async() => {
     try{
@@ -83,14 +84,13 @@ const BookDetails = () => {
     }
   }
 
-  // TODO: handle rating (abiman)
   const handleRate = async() => {
     try {
       const response = await axios.post(
         `${book_review_recommend_link}/rate`,
         {
           book_id: id,
-          title: book.title,
+          rate: rate,
           review: review
         },
         {
@@ -103,13 +103,13 @@ const BookDetails = () => {
       if (response.status === 200 && book) {
         setLoading(true);
         setBookDetails();
+        setShowRatingModal(false);
       }
     } catch (error) {
       console.error("Error liking the book:", error);
     }
   }
 
-  // TODO: handle buying (gethwan)
   const handleBuy = async() => {
     try {
       console.log("buying book with id: ", id);
@@ -150,6 +150,9 @@ const BookDetails = () => {
         <div className='book-details-content grid'>
           <div className='book-details-img'>
             <img src = {book?.cover_img} alt = "cover img" />
+            <div style={{ marginTop: '0.5rem', fontWeight: 'bold' }}>
+              Price: ${book?.price}
+            </div>
             <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', margin: '5px'}}>
 
               {book?.paid ? (
@@ -174,34 +177,66 @@ const BookDetails = () => {
                 </div>
               </button>
 
-              <button type='button' className='flex flex-c back-btn' disabled={book?.paid}>
+              <button type='button' className='flex flex-c back-btn' disabled={book?.paid} onClick={() => setShowRatingModal(true)}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                   <FaStar size={24} />
                   <span>{book?.rate}</span>
                 </div>
               </button>
-
             </div>
           </div>
           <div className='book-details-info'>
-            <div className='book-details-item title'>
-              <span className='fw-6 fs-24'>{book?.title}</span>
-            </div>
-            <div className='book-details-item description'>
-              <span>{book?.description}</span>
-            </div>
-            <div className='book-details-item'>
-              <span className='fw-6'>Subject Places: </span>
-              <span className='text-italic'>{book?.subject_places}</span>
-            </div>
-            <div className='book-details-item'>
-              <span className='fw-6'>Subject Times: </span>
-              <span className='text-italic'>{book?.subject_times}</span>
-            </div>
-            <div className='book-details-item'>
-              <span className='fw-6'>Subjects: </span>
-              <span>{book?.subjects}</span>
-            </div>
+            {showRatingModal ? (
+              <div>
+                <h3>Rate This Book</h3>
+                <form className="rate-form" onSubmit={(e) => { e.preventDefault(); handleRate(); }}>
+                  <div className="form-field">
+                    <label>Rating (1-5):</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="5"
+                      value={rate}
+                      onChange={e => setRate(Number(e.target.value))}
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label>Review:</label>
+                    <textarea
+                      rows="4"
+                      value={review}
+                      onChange={e => setReview(e.target.value)}
+                    />
+                  </div>
+
+                  <button type="submit" className="rate-submit-btn">Submit</button>
+                  <button className="rate-cancel-btn" onClick={() => setShowRatingModal(false)}>Cancel</button>
+                </form>
+              </div>
+            ): (
+              <div>
+                <div className='book-details-item title'>
+                  <span className='fw-6 fs-24'>{book?.title}</span>
+                </div>
+                <div className='book-details-item description'>
+                  <span>{book?.description}</span>
+                </div>
+                <div className='book-details-item'>
+                  <span className='fw-6'>Subject Places: </span>
+                  <span className='text-italic'>{book?.subject_places}</span>
+                </div>
+                <div className='book-details-item'>
+                  <span className='fw-6'>Subject Times: </span>
+                  <span className='text-italic'>{book?.subject_times}</span>
+                </div>
+                <div className='book-details-item'>
+                  <span className='fw-6'>Subjects: </span>
+                  <span>{book?.subjects}</span>
+                </div>
+              </div>
+            )}
+            
           </div>
         </div>
       </div>

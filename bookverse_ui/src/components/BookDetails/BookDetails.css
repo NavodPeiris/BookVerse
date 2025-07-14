@@ -54,6 +54,62 @@
     border-radius: 8px;
 }
 
+
+.rate-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 2rem;
+  max-width: 800px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.form-field label {
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+textarea {
+  padding: 8px;
+  resize: vertical;
+}
+
+.checkbox-field {
+  grid-column: span 2;
+  align-items: center;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+.rate-submit-btn {
+  grid-column: span 1;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.rate-cancel-btn {
+  grid-column: span 1;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background-color: #ca3623;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
 @media screen and (min-width: 768px){
     .book-details-content{
         grid-template-columns: 40% 60%;

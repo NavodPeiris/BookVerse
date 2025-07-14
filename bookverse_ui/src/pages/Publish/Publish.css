@@ -15,6 +15,50 @@
     opacity: 0.8;
 }
 
+.publish-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 2rem;
+  max-width: 800px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.form-field label {
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.checkbox-field {
+  grid-column: span 2;
+  align-items: center;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+.publish-btn {
+  grid-column: span 2;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+
 @media screen and (min-width: 800px){
     .about-content{
         grid-template-columns: repeat(2, 1fr);

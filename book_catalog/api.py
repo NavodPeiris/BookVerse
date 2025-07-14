@@ -181,6 +181,7 @@ async def get_work(work_id: str, user_id: int = Depends(get_current_user_id), db
 
     purchase = resultP.scalar()
     
+    # check whether already paid for book
     if purchase != None:
         doc["paid"] = False
     
@@ -194,8 +195,8 @@ async def get_work(work_id: str, user_id: int = Depends(get_current_user_id), db
         "paid": doc.get("paid"),
         "like_count": like_count,
         "user_liked": user_liked,
-        "rate": rate,
-        "price": doc.get("price")
+        "rate": float(rate),
+        "price": float(doc.get("price"))
     }
        
     return JSONResponse(content=res)
@@ -233,6 +234,7 @@ async def most_liked_works(user_id: int = Depends(get_current_user_id), db: Asyn
 
     top_10_books = result.all()
     result_docs = []
+    response = None
 
     for book in top_10_books:
         bucket_name = "book-metadata"
@@ -251,13 +253,15 @@ async def most_liked_works(user_id: int = Depends(get_current_user_id), db: Asyn
             "edition_count": doc.get("edition_count"),
             "first_publish_year": doc.get("first_publish_year"),
             "title": doc.get("title"),
+            "like_count": book.like_count
         }
 
         result_docs.append(formatted_doc)
     
-    # Close the stream
-    response.close()
-    response.release_conn()
+    if response != None:
+        # Close the stream
+        response.close()
+        response.release_conn()
 
     return JSONResponse(content=result_docs)
 

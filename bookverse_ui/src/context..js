@@ -1,7 +1,7 @@
 import React, {useState, useContext, useEffect} from 'react';
 import { useCallback } from 'react';
 import axios from "axios";
-import { book_catalog_link } from './backend_links';
+import { book_catalog_link, book_review_recommend_link } from './backend_links';
 const AppContext = React.createContext();
 
 const AppProvider = ({children}) => {
@@ -13,6 +13,9 @@ const AppProvider = ({children}) => {
     const [free, setFree] = useState(null);
 
     const [books, setBooks] = useState([]);
+    const [mostLikedBooks, setMostLikedBooks] = useState([]);
+    const [recommendedBooks, setRecommendedBooks] = useState([]);
+
     const [loading, setLoading] = useState(true);
     const [resultTitle, setResultTitle] = useState("");
 
@@ -43,6 +46,24 @@ const AppProvider = ({children}) => {
 
             console.log(docs);
 
+            const most_liked_response = await axios.get(`${book_catalog_link}/most_liked`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+            );
+            const most_liked_docs = most_liked_response.data;
+
+            const recommended_response = await axios.get(`${book_review_recommend_link}/recommend`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+            );
+            const recommended_docs = recommended_response.data;
+
             if(docs){
                 const newBooks = docs.slice(0, 20).map((bookSingle) => {
                     const {key, author_name, cover_image_available, edition_count, first_publish_year, title} = bookSingle;
@@ -68,6 +89,48 @@ const AppProvider = ({children}) => {
                 setBooks([]);
                 setResultTitle("No Search Result Found!");
             }
+
+            if(most_liked_docs){
+                const newBooks = most_liked_docs.slice(0, 20).map((bookSingle) => {
+                    const {key, author_name, cover_image_available, edition_count, first_publish_year, title, like_count} = bookSingle;
+                    console.log(key)
+                    return {
+                        id: key,
+                        author: author_name,
+                        cover_image_available: cover_image_available,
+                        edition_count: edition_count,
+                        first_publish_year: first_publish_year,
+                        title: title,
+                        like_count: like_count
+                    }
+                });
+
+                setMostLikedBooks(newBooks);
+
+            } else {
+                setMostLikedBooks([]);
+            }
+
+            if(recommended_docs){
+                const newBooks = recommended_docs.slice(0, 20).map((bookSingle) => {
+                    const {key, author_name, cover_image_available, edition_count, first_publish_year, title} = bookSingle;
+                    console.log(key)
+                    return {
+                        id: key,
+                        author: author_name,
+                        cover_image_available: cover_image_available,
+                        edition_count: edition_count,
+                        first_publish_year: first_publish_year,
+                        title: title
+                    }
+                });
+
+                setRecommendedBooks(newBooks);
+
+            } else {
+                setRecommendedBooks([]);
+            }
+
             setLoading(false);
         } catch(error){
             console.log(error);
@@ -81,7 +144,7 @@ const AppProvider = ({children}) => {
 
     return (
         <AppContext.Provider value = {{
-            loading, books, setTitle, setDescription, setAuthors, setSubjects, setPaid, setFree, paid, free, resultTitle, setResultTitle,
+            loading, books, mostLikedBooks, recommendedBooks, setTitle, setDescription, setAuthors, setSubjects, setPaid, setFree, paid, free, resultTitle, setResultTitle,
         }}>
             {children}
         </AppContext.Provider>

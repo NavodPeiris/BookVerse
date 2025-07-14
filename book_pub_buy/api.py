@@ -11,7 +11,7 @@ from sqlalchemy import Column, Integer, String, select, func
 from utils import get_db, get_current_user_id, User, Likes, Reviews, Purchases, SECRET_KEY, ALGORITHM, es, client
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from typing import Optional
+from typing import List, Optional
 from datetime import datetime
 import uuid
 from io import BytesIO
@@ -97,7 +97,7 @@ async def buy(request: BookBuyRequest, user_id: int = Depends(get_current_user_i
     if existing_purchases:
         return JSONResponse(content={"message": "book was already owned"})
 
-    # Add the like
+    # Add new purchase record
     new_purchase = Purchases(user_id=user_id, book_id=request.book_id)
     db.add(new_purchase)
     await db.commit()
@@ -111,8 +111,8 @@ async def publish(
     title: str = Form(...),
     subtitle: str = Form(...),
     cover_image_available: bool = Form(...),
-    authors: str = Form(...),
-    subjects: str = Form(...),
+    authors: List[str] = Form(...),
+    subjects: List[str] = Form(...),
     subject_places: Optional[str] = Form(None),
     subject_times: Optional[str] = Form(None),
     description: str = Form(...),
@@ -135,8 +135,8 @@ async def publish(
         "description": description,
         "latest_revision": edition_count,
         "edition_count": edition_count,
-        "created": datetime.utcnow(),
-        "last_modified": datetime.utcnow(),
+        "created": datetime.utcnow().isoformat(),
+        "last_modified": datetime.utcnow().isoformat(),
         "price": price,
         "paid": True if price > 0 else False,
         "author_id": user_id
@@ -175,18 +175,18 @@ async def publish(
 
         client.put_object(
             bucket_name=book_cover_image_bucket_name,
-            object_name=f"{title}.jpg",
+            object_name=f"{book_obj['key']}.jpg",
             data=io.BytesIO(img_bytes),
             length=len(img_bytes),
-            content_type=doc.content_type
+            content_type='image/jpeg'
         )
 
         client.put_object(
             bucket_name=book_pdf_bucket_name,
-            object_name=f"{title}.pdf",
+            object_name=f"{book_obj['key']}.pdf",
             data=io.BytesIO(doc_bytes),
             length=len(doc_bytes),
-            content_type=doc.content_type
+            content_type='application/pdf'
         )
 
 
