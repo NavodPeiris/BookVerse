@@ -1,0 +1,4 @@
+sqlalchemy[asyncio]
+asyncpg
+minio
+elasticsearch<9.0.0

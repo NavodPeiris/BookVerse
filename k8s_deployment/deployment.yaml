@@ -15,6 +15,64 @@ spec:
     args: ["sleep", "3600"]
   restartPolicy: Never
 ---
+# data-ingest-service
+# this service become alive after all minio, postgres, elasticsearch services
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-ingest-service
+  namespace: bookverse
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data-ingest-service
+  template:
+    metadata:
+      labels:
+        app: data-ingest-service
+    spec:
+      initContainers:
+      - name: wait-for-dependencies
+        image: busybox
+        command:
+          - sh
+          - -c
+          - |
+            echo "Waiting for postgres..."
+            until nc -z postgres 5432; do echo waiting for postgres; sleep 2; done
+
+            echo "Waiting for minio..."
+            until nc -z minio 9000; do echo waiting for minio; sleep 2; done
+
+            echo "Waiting for elasticsearch..."
+            until nc -z elasticsearch 9200; do echo waiting for elasticsearch; sleep 2; done
+
+            echo "All services are ready."
+      containers:
+      - name: data-ingest-service
+        image: navodevil/bookverse-data-ingest-service:latest
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-ingest-service
+  namespace: bookverse
+spec:
+  type: ClusterIP
+  selector:
+    app: data-ingest-service
+  ports:
+    - port: 4001
+      targetPort: 4001
+---
 # auth-service
 apiVersion: apps/v1
 kind: Deployment
@@ -315,7 +373,7 @@ metadata:
   name: elasticsearch
   namespace: bookverse
 spec:
-  type: LoadBalancer
+  type: NodePort
   selector:
     app: elasticsearch
   ports:
@@ -361,7 +419,7 @@ metadata:
   name: postgres
   namespace: bookverse
 spec:
-  type: LoadBalancer
+  type: NodePort
   selector:
     app: postgres
   ports:

@@ -1,4 +1,4 @@
-const prod = false
+const prod = true
 const ingress_ip = "localhost" // this is localhost as we run k8s locally
 
 const auth_link = prod ? `http://${ingress_ip}/auth`: "http://localhost:8001/auth"

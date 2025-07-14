@@ -5,20 +5,19 @@ import os
 from elasticsearch import Elasticsearch
 from minio import Minio
 
-IS_PROD = False
-INGRESS_IP = "localhost" # this is localhost as we run k8s locally
+IS_PROD = os.getenv("ENV") == "prod"
 
 if IS_PROD:
-    DATABASE_URL = f"postgresql+asyncpg://postgres:postgres@{INGRESS_IP}:5432/bookverse_db"
+    DATABASE_URL = "postgresql+asyncpg://postgres:postgres@postgres.bookverse.svc.cluster.local:5432/bookverse_db"
 
-    es = Elasticsearch(f"http://{INGRESS_IP}:9200")
+    es = Elasticsearch("http://elasticsearch.bookverse.svc.cluster.local:9200")
 
     # Initialize the MinIO client
     client = Minio(
-        f"{INGRESS_IP}:9000",  # or your MinIO server address
+        "minio.bookverse.svc.cluster.local:9000",
         access_key="minioadmin",
         secret_key="minioadmin",
-        secure=False  # Set to True if using HTTPS
+        secure=False
     )
 else:
     DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/bookverse_db"
@@ -27,10 +26,10 @@ else:
 
     # Initialize the MinIO client
     client = Minio(
-        "localhost:9000",  # or your MinIO server address
+        "localhost:9000",
         access_key="minioadmin",
         secret_key="minioadmin",
-        secure=False  # Set to True if using HTTPS
+        secure=False
     )
 
 
