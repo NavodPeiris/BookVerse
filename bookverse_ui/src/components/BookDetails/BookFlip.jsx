@@ -71,7 +71,7 @@ export default function BookFlip() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center py-8">
+    <div style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', width: '100vw', backgroundColor: '#f3f4f6' }}>
         {isLoading ? (
             <div className="flex flex-col items-center text-gray-500">
             <Loader2 className="animate-spin mb-2" size={32} />
@@ -80,13 +80,13 @@ export default function BookFlip() {
         ) : (
             <>
             {/* Book with frame */}
-            <div className="border-4 border-gray-300 rounded-xl shadow-xl overflow-hidden">
+            <div className="flex justify-center items-center w-full">
                 <HTMLFlipBook
                 width={600}
                 height={800}
                 ref={bookRef}
                 onFlip={onFlip}
-                className="bg-white"
+                className="bg-white shadow-xl rounded-lg"
                 >
                 {Array.from({ length: numPages }, (_, i) => (
                     <div key={i} className="page p-2 bg-white flex items-center justify-center">
