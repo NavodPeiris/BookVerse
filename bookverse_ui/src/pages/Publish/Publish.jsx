@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import './Publish.css';
 import { book_pub_buy_link } from "../../backend_links";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 const Publish = () => {
   const [first_publish_year, setFirstPubYear] = useState(0);
   const [title, setTitle] = useState("");
   const [subtitle, setSubTitle] = useState("");
-  const [cover_image_available, setCoverImageAvailable] = useState(false);
   const [authors, setAuthors] = useState("");
   const [subjects, setSubjects] = useState("");
   const [subject_places, setSubjectPlaces] = useState("");
@@ -20,6 +20,7 @@ const Publish = () => {
   const [imgPreview, setImgPreview] = useState(null);
 
   const token = localStorage.getItem('access_token');
+  const navigate = useNavigate();
 
   const handlePublish = async () => {
 
@@ -27,7 +28,7 @@ const Publish = () => {
       alert("Please upload both book PDF");
     }
 
-    if(cover_image_available && !img){
+    if(!(img)){
       alert("Please upload cover image");
     }
 
@@ -42,7 +43,6 @@ const Publish = () => {
     formData.append("first_publish_year", first_publish_year);
     formData.append("title", title);
     formData.append("subtitle", subtitle);
-    formData.append("cover_image_available", cover_image_available);
     formData.append("authors", authorsArray);
     formData.append("subjects", subjectsArray);
     formData.append("subject_places", subject_places);
@@ -61,6 +61,7 @@ const Publish = () => {
         },
       });
       alert("Published successfully!");
+      navigate("/book")
     } catch (error) {
       console.error("Error publishing the book:", error);
       alert("Error publishing the book.");
@@ -130,13 +131,6 @@ const Publish = () => {
             <div className="form-field">
               <label>Price (USD)</label>
               <input type="number" value={price} onChange={e => setPrice(e.target.value)} />
-            </div>
-
-            <div className="form-field checkbox-field">
-              <label>
-                <input type="checkbox" checked={cover_image_available} onChange={e => setCoverImageAvailable(e.target.checked)} style={{ marginRight: '8px' }}/>
-                Cover Image Available
-              </label>
             </div>
 
             <div className="form-field">

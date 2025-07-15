@@ -88,9 +88,6 @@ async def create_checkout_session(request: CreateCheckoutSessionRequest):
 @app.post("/book-pub-buy/buy")
 async def buy(request: BookBuyRequest, user_id: int = Depends(get_current_user_id), db: AsyncSession = Depends(get_db)):
 
-    # TODO: handle payment in frontend and when it is successful only, call this endpoint
-    # TODO: 5% of payment price should come to bookverse organization account
-
     result = await db.execute(select(Purchases).where(Likes.user_id == user_id, Likes.book_id == request.book_id))
     existing_purchases = result.scalar()
 
@@ -110,7 +107,6 @@ async def publish(
     first_publish_year: str = Form(...),
     title: str = Form(...),
     subtitle: str = Form(...),
-    cover_image_available: bool = Form(...),
     authors: List[str] = Form(...),
     subjects: List[str] = Form(...),
     subject_places: Optional[str] = Form(None),
@@ -122,14 +118,12 @@ async def publish(
     img: UploadFile = File(...),
     user_id: int = Depends(get_current_user_id)):
 
-    # TODO: handle payment in frontend and when it is successful only, call this endpoint
-
     book_obj = {
         "key": str(uuid.uuid4()),
         "first_publish_year": first_publish_year,
         "title": title,
         "subtitle": subtitle,
-        "cover_image_available": cover_image_available,
+        "cover_image_available": True,
         "authors": authors,
         "subjects": subjects,
         "description": description,

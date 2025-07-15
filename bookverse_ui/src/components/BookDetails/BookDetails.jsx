@@ -150,7 +150,7 @@ const BookDetails = () => {
         <div className='book-details-content grid'>
           <div className='book-details-img'>
             <img src = {book?.cover_img} alt = "cover img" />
-            {(book?.price == 0 || book?.paid) ? (
+            {(book?.price == 0 || !book?.paid) ? (
               <div style={{ marginTop: '0.5rem', fontWeight: 'bold' }}>
                 Free Book
               </div>
