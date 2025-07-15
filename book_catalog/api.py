@@ -184,7 +184,12 @@ async def get_work(work_id: str, user_id: int = Depends(get_current_user_id), db
     # check whether already paid for book
     if purchase != None:
         doc["paid"] = False
-    
+
+    # check whether user is the author
+    author_id = doc.get("author_id")
+    if author_id != None and author_id == user_id:
+        doc["paid"] = False
+        
     res = {
         "description": doc.get("description"),
         "title": doc.get("title"),

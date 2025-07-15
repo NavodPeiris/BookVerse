@@ -19,10 +19,29 @@ const Publish = () => {
   const [img, setImg] = useState(null);
   const [imgPreview, setImgPreview] = useState(null);
 
+  const [selectedBank, setSelectedBank] = useState("");
+  const [account, setAccount] = useState("");
+
+  const bankOptions = [
+    { value: "bank_001", label: "Bank of Ceylon" },
+    { value: "bank_002", label: "National Savings Bank" },
+    { value: "bank_003", label: "Commercial Bank" },
+    { value: "bank_004", label: "Hatton National Bank" },
+    { value: "bank_005", label: "Peoples Bank" }
+  ];
+
   const token = localStorage.getItem('access_token');
   const navigate = useNavigate();
 
   const handlePublish = async () => {
+
+    if(account == ""){
+      alert("Please enter bank account number");
+    }
+
+    if(selectedBank == ""){
+      alert("Please select your bank");
+    }
 
     if(!(doc)){
       alert("Please upload both book PDF");
@@ -83,6 +102,27 @@ const Publish = () => {
 
         <div>
           <form className="publish-form" onSubmit={(e) => { e.preventDefault(); handlePublish(); }}>
+            <div className="form-field">
+              <label>Select Your Bank</label>
+              <select
+                value={selectedBank}
+                onChange={(e) => setSelectedBank(e.target.value)}
+                required
+              >
+                <option value="">-- Choose a bank --</option>
+                {bankOptions.map((bank) => (
+                  <option key={bank.value} value={bank.value}>
+                    {bank.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-field">
+              <label>Enter Your Bank Account</label>
+              <input type="text" value={account} onChange={e => setAccount(e.target.value)} required />
+            </div>
+
             <div className="form-field">
               <label>Title</label>
               <input type="text" value={title} onChange={e => setTitle(e.target.value)} required />
