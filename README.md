@@ -4,6 +4,25 @@
   <img src="ds_architecture.png" />
 </p>
 
+### About Project
+
+BookVerse is a website which allows users to read, like, review, download, publish and buy books. We also offer free books and users can publish their own books and sell them. We want to give book lovers access to books worldwide and encourage authors to publish and make money. BookVerse is a book library which brings together both readers and publishers.
+
+### features
+
+- Search books by title, author, description, subjects
+- read, like and download books
+- rate and review books
+- recommend books
+- buy and publish books
+- show most liked books
+
+Elasticsearch provides fast text based search for searching book by title, author, description, subjects  
+
+Minio is the object storage for storing PDFs, cover images and book metadata JSON files
+
+PostgreSQL is the database for storing structured data  
+
 ### Dev Setup
 
 service map:
